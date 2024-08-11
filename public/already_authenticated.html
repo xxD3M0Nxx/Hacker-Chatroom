@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Notice</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #ff0000; /* Red for emphasis */
+            text-shadow: 2px 2px 5px rgba(255, 0, 0, 0.8);
+        }
+        p {
+            font-size: 24px;
+            margin: 0;
+            color: #0f0;
+            text-shadow: 1px 1px 3px rgba(0, 255, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Warning!</h1>
+        <p>You are already logged in.<br>Please log out if you want to change accounts.</p>
+        <a href="/logout">Log Out</a>
+        <a href="/chatroom">Back to Chatroom</a>
+    </div>
+</body>
+</html>

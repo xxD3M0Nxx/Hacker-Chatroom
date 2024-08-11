@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Algerian&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            color: #0f0;
+            background: url('hackerimage.webp') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh; /* Ensure the body covers the full viewport height */
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7); /* Translucent background for container */
+            border-radius: 10px;
+        }
+        #profile-info, #update-form {
+            width: 100%;
+            max-width: 800px; /* Set a maximum width for better layout control */
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        #profile-info {
+            background: rgba(17, 17, 17, 0.8); /* Slightly translucent background */
+        }
+        #update-form {
+            background: rgba(34, 34, 34, 0.8); /* Slightly translucent background */
+        }
+        #profile-info h2 {
+            margin-top: 0;
+        }
+        #profile-info p, #update-form label {
+            margin: 10px 0;
+        }
+        #update-form input[type="text"], 
+        #update-form input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            background: #111;
+            color: #0f0;
+        }
+        #update-form input[type="submit"] {
+            background: #0f0;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        #update-form input[type="submit"]:hover {
+            background: #0c0;
+        }
+        #logout-button {
+            background: #f00;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        #logout-button:hover {
+            background: #c00;
+        }
+        .watermark {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-family: 'Algerian', serif;
+            font-size: 14px;
+            color: rgba(15, 255, 15, 0.5); /* Translucent green */
+            pointer-events: none; /* Prevents interaction with the watermark */
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="profile-info">
+            <h2>User Profile</h2>
+            <p><strong>Name:</strong> <span id="user-name"></span></p>
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            <p><strong>Role:</strong> <span id="user-role">Normal User</span></p>
+        </div>
+        <div id="update-form">
+            <h3>Update Profile</h3>
+            <form action="/update-profile" method="POST">
+                <label for="email">New Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter new email">
+                
+                <label for="name">New Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter new name">
+                
+                <input type="submit" value="Update">
+            </form>
+        </div>
+
+        <button id="logout-button" onclick="window.location.href='/logout';">Logout</button>
+    </div>
+    <div class="watermark">Made by D3M0N</div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/userdata', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                document.getElementById('user-name').textContent = data.username;
+                document.getElementById('user-email').textContent = data.email;
+                document.getElementById('user-role').textContent = data.role; // or 'Normal User' based on user type
+            } else {
+                console.error('No data received or network error');
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Algerian&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+        }
+        #container {
+            display: flex;
+            height: 100vh;
+        }
+        #sidebar {
+            width: 250px;
+            background: #111;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        #sidebar h1 {
+            font-size: 24px;
+            margin: 0 0 20px 0;
+        }
+        #sidebar a {
+            color: #0f0;
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 18px;
+            display: block;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        #sidebar a:hover {
+            background: #333;
+        }
+        #chat-area {
+            flex: 1;
+            background: #000; /* Fully dark background */
+            display: flex;
+            flex-direction: column;
+            max-width: calc(100% - 300px); /* Moderate constriction */
+            margin-right: 5px; /* Leave space for additional functionality */
+        }
+        #chat-window {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #000; /* Fully dark background */
+            border-left: 1px solid #0f0;
+            border-bottom: 1px solid #0f0;
+        }
+        .message {
+            background: #333;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            color: #fff;
+        }
+        .message strong {
+            color: #0f0;
+        }
+        #message-input-container {
+            display: flex;
+            border-top: 1px solid #0f0;
+            background: #111;
+        }
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #111;
+            color: #0f0;
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        #message-input:focus {
+            outline: none;
+        }
+        #send-button {
+            background: #0f0;
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 0 0 5px 5px;
+            transition: background 0.3s;
+        }
+        #send-button:hover {
+            background: #0c0;
+        }
+        #right-area {
+            width: 300px;
+            background: #111; /* Match left sidebar */
+            padding: 50px;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+        }
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-family: 'Algerian', serif;
+            font-size: 14px;
+            color: rgba(15, 255, 15, 0.5); /* Translucent green */
+            pointer-events: none; /* Prevents interaction with the watermark */
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="sidebar">
+            <h1>Chatroom</h1>
+            <a href="/home">Home</a>
+            <a href="/settings">Settings</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+            <div class="watermark">Made by D3M0N</div>
+        </div>
+        <div id="chat-area">
+            <div id="chat-window">
+                <!-- Chat messages will appear here -->
+                <div class="message">
+                    <strong>User1:</strong> Welcome to the chatroom!
+                </div>
+                <div class="message">
+                    <strong>User2:</strong> Hello everyone!
+                </div>
+                <!-- More messages -->
+            </div>
+            <div id="message-input-container">
+                <input type="text" id="message-input" placeholder="Type a message...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+        <div id="right-area">
+            <!-- Additional functionality can be added here -->
+            <p style="color: #0f0;">Additional functionality area</p>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io()
+        let username
+        fetch('/userdata', {
+        method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+        if (data) {
+            username = data.username;
+            console.log('Username fetched:', username); // Debugging
+        }
+    }).catch(error => {
+        console.error('Error fetching values:', error);
+    });
+        function sendMessage(){
+            const messageInput = document.getElementById('message-input')
+            const message = messageInput.value
+            if (message && username) {
+            socket.emit('chat message', { username: username, text: message });
+            messageInput.value = '';
+            }
+        }
+        document.getElementById('send-button').addEventListener('click' , (sendMessage))
+        document.getElementById('message-input').addEventListener('keypress' , (event) => {
+            if(event.key === 'Enter'){
+                sendMessage()
+            }
+        })
+        socket.on('chat-history', (messages) => {
+            messages.forEach((message) => {
+            const chatwindow = document.getElementById('chat-window');
+            const newMessage = document.createElement('div');
+            newMessage.className = 'message';
+            newMessage.innerHTML = `<strong>${message.username}:</strong> ${message.message}`;
+            chatwindow.appendChild(newMessage);
+        });
+    chatwindow.scrollTop = chatwindow.scrollHeight;
+});
+        socket.on('chat message' , (message) => {
+            const chatWindow = document.getElementById('chat-window')
+            const newMessage = document.createElement('div')
+            newMessage.className = 'message'
+            newMessage.innerHTML = `<strong>${message.username}:</strong> ${message.text}`
+            chatWindow.appendChild(newMessage)
+            chatWindow.scrollTop = chatWindow.scrollHeight
+        })
+    </script>
+</body>
+</html>

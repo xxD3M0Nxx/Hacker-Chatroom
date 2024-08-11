@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hacker Chatroom</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background: rgba(0, 0, 0, 0.7) url('https://cdn.pixabay.com/photo/2017/09/16/12/35/anonymous-2755365_640.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8); /* Darker and translucent background */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 255, 0, 0.6);
+            width: 320px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin: 0 0 20px;
+            color: #0f0;
+            text-shadow: 1px 1px 0 #000; /* Hacker-like text shadow */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1em;
+            color: #0f0;
+        }
+
+        input {
+            width: calc(100% - 22px); /* Adjusted width to fit padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #0f0;
+            font-size: 1em;
+        }
+
+        input[type="submit"] {
+            background: #0f0;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            padding: 12px;
+            transition: background 0.3s;
+        }
+        input[type="button"] {
+            background: #0f0;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            padding: 12px;
+            transition: background 0.3s;
+        }
+
+        input[type="button"]:hover {
+            background: #0ff;
+        }
+        input[type="submit"]:hover {
+            background: #0ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login to Enter Chatroom</h1>
+        <form id="login">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Log In">
+            <input  id="backtohome" type="button" value="Back to Home">
+        </form>
+        <div class="error-message" id="invalid"></div>
+        <div class="error-message" id="loggedin"></div>
+    </div>
+    <script>
+        document.getElementById('backtohome').addEventListener('click' , function(){
+            window.location.href = '/home'
+        })
+        document.getElementById('login').addEventListener('submit' , function(event){
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const error = document.getElementById('invalid');
+
+            fetch('/login' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({username , password })
+            })
+            .then(response => {
+                if (response.redirected){
+                    window.location.href = response.url
+                }else {
+                    return response.json()
+                }
+            })
+            .then(data => {
+                if (data && !data.success){
+                    error.textContent = data.message;
+                }
+                else if(data.loggedin == 'true'){
+                    const notice = document.getElementById('loggedin')
+                    notice.textContent = 'You Are Already Logged in'
+                }
+            }).catch(error => {
+                console.error('Error:' , error)
+            })
+        })
+    </script>
+</body>
+</html>

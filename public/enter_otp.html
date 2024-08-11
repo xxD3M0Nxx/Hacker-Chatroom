@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <style>
+        body {
+            background-color: #000; /* Black background for a hacker vibe */
+            color: #00ff00; /* Green text */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            width: 400px;
+            background: rgba(0, 0, 0, 0.9); /* Slightly translucent background */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* Green glow effect */
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-family: 'Press Start 2P', cursive; /* Retro game font */
+            text-shadow: 0 0 10px #00FF00, 0 0 20px #00FF00; /* Glowing text */
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        input[type="text"], input[type="password"] {
+            background-color: #222;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 90%;
+        }
+
+        button {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button:hover {
+            background-color: #000;
+            color: #00ff00;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1.2em;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .instruction {
+            color: #00ff00;
+            font-size: 1.2em;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"> <!-- Retro font -->
+</head>
+<body>
+    <div class="container">
+        <h1>OTP is sent! Check your registered email and proceed</h1>
+        <form id="otp-form">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" name="otp" required>
+
+            <label for="username" class="instruction">Enter Username and Password You Want to Set:</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" required>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+            <input type="hidden" id="email" name="email">
+            <button type="submit">Verify OTP</button>
+            <div id="error-message" class="error-message"></div>
+        </form>
+        <a href="/home" class="back-link">Back to Home</a>
+    </div>
+
+    <script>
+        function getQueryParam(param){
+            const urlParams = new URLSearchParams(window.location.search)
+            return urlParams.get(param)
+        }
+        const emailInput = document.getElementById('email')
+        emailInput.value = getQueryParam('email')
+        const email = emailInput.value
+        document.getElementById('otp-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            
+            const otp = document.getElementById('otp').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessageDiv = document.getElementById('error-message');
+
+            fetch('/verify_otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, otp, username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirect or show success message
+                    window.location.href = '/register_success.html'; // Example redirection
+                } else {
+                    // Display error message
+                    errorMessageDiv.textContent = data.message;
+                    errorMessageDiv.style.display = 'block';
+                    window.location.href = '/register'
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessageDiv.textContent = 'An unexpected error occurred.';
+                errorMessageDiv.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
